@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from "@nestjs/common";
+import { BadRequestException, Body, Controller, Post } from "@nestjs/common";
 import { CreateUserDto } from "../../core/domain/users/dtos/create-user.dto";
 import { UsersService } from "../../core/domain/users/services/users.service";
 import { LoginUserDto } from "../../core/domain/users/dtos/login-user.dto";
@@ -15,7 +15,7 @@ export class UsersController {
     @Post("signup")
     async signup(@Body() createUserDto: CreateUserDto) {
         if (!createUserDto.acceptTermsAndConditions)
-            throw "You must accept the terms and conditions";
+            throw new BadRequestException("You must accept the terms and conditions");
         return this.usersService.signup(createUserDto);
     }
 }

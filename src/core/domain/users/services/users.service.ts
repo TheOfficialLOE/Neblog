@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { CreateUserDto } from "../dtos/create-user.dto";
 import { User } from "../entities/user";
 import { UsersRepository } from "../repositories/users.repository";
@@ -15,11 +15,16 @@ export class UsersService {
     {}
 
     async login(loginDto: LoginUserDto) {
-        const dbUser = await this.usersRepository.findUser(loginDto.email);
+        const user = await User.new({
+            email: loginDto.email,
+            password: loginDto.password,
+            acceptTermsAndConditions: true
+        });
+        const dbUser = await this.usersRepository.findUser(user.email);
         if (!dbUser)
-            throw "User not found";
+            throw new NotFoundException("User not found");
         if (!await HashHelper.compare(loginDto.password, dbUser.password))
-            throw "Wrong password";
+            throw new BadRequestException("Wrong password");
         return this.jwtService.sign({
             email: loginDto.email,
         });
@@ -32,7 +37,7 @@ export class UsersService {
             acceptTermsAndConditions: createUserDto.acceptTermsAndConditions
         });
         if (await this.usersRepository.countUsers(user.email)) {
-            throw "User already exists";
+            throw new BadRequestException("User already exists");
         }
         await this.usersRepository.saveUser(user);
         return this.jwtService.sign({ email: user.email });
