@@ -16,4 +16,13 @@ model Users {
   name                     String?  @db.VarChar(100)
   password                 String   @db.VarChar(255)
   acceptTermsAndConditions Boolean
+  Posts                    Posts[]
+}
+
+model Posts {
+  id                       String   @id @default(uuid())
+  title                    String   @db.VarChar(100)
+  content                  String   @db.Text
+  author                   Users    @relation(fields: [authorId], references: [id])
+  authorId                 String
 }
