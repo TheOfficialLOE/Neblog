@@ -23,12 +23,13 @@ export class UsersRepository {
 
     async createUser(user: User) {
         const { email, password, acceptTermsAndConditions } = user;
-        await this.prismaService.users.create({
+        const newUser = await this.prismaService.users.create({
             data: {
                 email,
                 password,
                 acceptTermsAndConditions
             }
         });
+        return newUser.id;
     }
 }
