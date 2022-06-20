@@ -1,10 +1,10 @@
 import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
-import { CreateUserDto } from "../dtos/create-user.dto";
 import { User } from "../entities/user";
 import { UsersRepository } from "../repositories/users.repository";
 import { JwtService } from "@nestjs/jwt";
-import { LoginUserDto } from "../dtos/login-user.dto";
-import { HashHelper } from "../../../common/hash/hash-helper";
+import { HashHelper } from "../../../common/utils/hash-helper";
+import { LoginAdapter } from "../adapters/login-adapter";
+import { SignupAdapter } from "../adapters/signup-adapter";
 
 @Injectable()
 export class UsersService {
@@ -14,32 +14,29 @@ export class UsersService {
         )
     {}
 
-    async login(loginDto: LoginUserDto) {
-        const user = await User.new({
-            email: loginDto.email,
-            password: loginDto.password,
-            acceptTermsAndConditions: true
-        });
-        const dbUser = await this.usersRepository.findUser(user.email);
+    async login(loginAdapter: LoginAdapter) {
+        const { email, password } = loginAdapter;
+        const dbUser = await this.usersRepository.findUser(email);
         if (!dbUser)
             throw new NotFoundException("User not found");
-        if (!await HashHelper.compare(loginDto.password, dbUser.password))
+        if (!await HashHelper.compare(password, dbUser.password))
             throw new BadRequestException("Wrong password");
         return this.jwtService.sign({
-            email: loginDto.email,
+            email,
         });
     }
 
-    async signup(createUserDto: CreateUserDto) {
+    async signup(signupAdapter: SignupAdapter) {
+        const { email, password, acceptTermsAndConditions } = signupAdapter;
         const user = await User.new({
-            email: createUserDto.email,
-            password: createUserDto.password,
-            acceptTermsAndConditions: createUserDto.acceptTermsAndConditions
+            email,
+            password,
+            acceptTermsAndConditions
         });
-        if (await this.usersRepository.countUsers(user.email)) {
+        if (await this.usersRepository.countUsers(email)) {
             throw new BadRequestException("User already exists");
         }
-        await this.usersRepository.saveUser(user);
+        await this.usersRepository.createUser(user);
         return this.jwtService.sign({ email: user.email });
     }
 }

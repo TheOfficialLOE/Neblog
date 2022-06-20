@@ -8,21 +8,20 @@ export class UsersRepository {
 
     async countUsers(email: string): Promise<number> {
         return await this.prismaService.users.count({
-            where: {
-                email
-            }
+            where: { email }
         });
     }
 
     async findUser(email: string) {
-        return await this.prismaService.users.findUnique({
-            where: {
-                email
-            }
+        const user = await this.prismaService.users.findUnique({
+            where: { email }
         });
+        if (user)
+            return await User.loadExisting(user);
+        return null;
     }
 
-    async saveUser(user: User) {
+    async createUser(user: User) {
         const { email, password, acceptTermsAndConditions } = user;
         await this.prismaService.users.create({
             data: {
