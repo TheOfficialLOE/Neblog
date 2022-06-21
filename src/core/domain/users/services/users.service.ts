@@ -3,8 +3,8 @@ import { User } from "../entities/user";
 import { UsersRepository } from "../repositories/users.repository";
 import { JwtService } from "@nestjs/jwt";
 import { HashHelper } from "../../../common/utils/hash-helper";
-import { LoginAdapter } from "../adapters/login-adapter";
-import { SignupAdapter } from "../adapters/signup-adapter";
+import { LoginAdapter } from "../adapters/login.adapter";
+import { SignupAdapter } from "../adapters/signup.adapter";
 
 @Injectable()
 export class UsersService {

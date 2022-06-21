@@ -21,13 +21,14 @@ export class HttpRoleAuthGuard implements CanActivate {
     private async checkAuthorization(request: Request): Promise<boolean> {
         const token = request.headers["x-auth-token"].toString();
         const email = this.jwtService.decode(token)["email"];
-        return await this.checkUserExistence(email);
+        return await this.checkUserExistenceAndAttachToReq(email, request);
     }
 
-    private async checkUserExistence(email: string): Promise<boolean> {
+    private async checkUserExistenceAndAttachToReq(email: string, request: Request): Promise<boolean> {
         const user = await this.usersRepository.findUser(email);
         if (!user)
             throw new UnauthorizedException("User not found");
+        request["user"] = user;
         return true;
     }
 }

@@ -2,8 +2,8 @@ import { Body, Controller, Post } from "@nestjs/common";
 import { CreateUserDto } from "../../core/domain/users/dtos/create-user.dto";
 import { UsersService } from "../../core/domain/users/services/users.service";
 import { LoginUserDto } from "../../core/domain/users/dtos/login-user.dto";
-import { LoginAdapter } from "../../core/domain/users/adapters/login-adapter";
-import { SignupAdapter } from "../../core/domain/users/adapters/signup-adapter";
+import { LoginAdapter } from "../../core/domain/users/adapters/login.adapter";
+import { SignupAdapter } from "../../core/domain/users/adapters/signup.adapter";
 
 @Controller("auth")
 export class UsersController {
