@@ -23,5 +23,6 @@ import { UsersRepository } from "../../core/domain/users/repositories/users.repo
     controllers: [
         UsersController
     ],
+    exports: [UsersRepository]
 })
 export class UsersModule {}

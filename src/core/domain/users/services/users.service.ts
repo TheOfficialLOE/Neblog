@@ -22,7 +22,7 @@ export class UsersService {
         if (!await HashHelper.compare(password, dbUser.password))
             throw new BadRequestException("Wrong password");
         return this.jwtService.sign({
-            id: dbUser.id,
+            email
         });
     }
 
@@ -36,7 +36,7 @@ export class UsersService {
         if (await this.usersRepository.countUsers(email)) {
             throw new BadRequestException("User already exists");
         }
-        const createdUserId = await this.usersRepository.createUser(user);
-        return this.jwtService.sign({ id: createdUserId });
+        await this.usersRepository.createUser(user);
+        return this.jwtService.sign({ email });
     }
 }
