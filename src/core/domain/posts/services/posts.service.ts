@@ -20,4 +20,8 @@ export class PostsService {
         return await this.postsRepository.createPost(post);
     }
 
+    async getPost(postId: string) {
+        return await this.postsRepository.getPost(postId);
+    }
+
 }

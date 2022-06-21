@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "../../../../infrastructure/prisma/prisma.service";
 import { Post } from "../entities/post";
 
@@ -18,5 +18,17 @@ export class PostsRepository {
                 authorId
             }
         });
+    }
+
+    async getPost(postId: string) {
+        const dbPost = await this.prismaService.posts.findFirst({
+            where: {
+                id: postId
+            }
+        });
+        if (!dbPost) {
+            throw new NotFoundException(`Post with id ${postId} not found`);
+        }
+        return Post.new(dbPost);
     }
 }
