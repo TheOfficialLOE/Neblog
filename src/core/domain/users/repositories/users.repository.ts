@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { User } from "../entities/user";
 import { PrismaService } from "../../../../infrastructure/prisma/prisma.service";
 
@@ -16,9 +16,9 @@ export class UsersRepository {
         const user = await this.prismaService.users.findUnique({
             where: { email }
         });
-        if (user)
-            return await User.loadExisting(user);
-        return null;
+        if (!user)
+            throw new NotFoundException(`User with email ${email} not found`);
+        return await User.loadExisting(user);
     }
 
     async createUser(user: User) {

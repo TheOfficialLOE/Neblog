@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
+import { BadRequestException, Injectable } from "@nestjs/common";
 import { User } from "../entities/user";
 import { UsersRepository } from "../repositories/users.repository";
 import { JwtService } from "@nestjs/jwt";
@@ -17,8 +17,6 @@ export class UsersService {
     async login(loginAdapter: LoginAdapter) {
         const { email, password } = loginAdapter;
         const dbUser = await this.usersRepository.findUser(email);
-        if (!dbUser)
-            throw new NotFoundException("User not found");
         if (!await HashHelper.compare(password, dbUser.password))
             throw new BadRequestException("Wrong password");
         return this.jwtService.sign({
